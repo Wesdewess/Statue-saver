@@ -14,10 +14,11 @@ int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
  boolean button = false;
  
 int shockSensor = 13;
-Servo arms;
+Servo arm1;
+Servo arm2;
 
-int Pos = 90;
-int Home = 0;
+int Pos = 99;
+int Home = 10;
 
 void setup(){
   Wire.begin();
@@ -26,8 +27,10 @@ void setup(){
   Wire.write(0);     //wake up MPU
   Wire.endTransmission(true);
   Serial.begin(9600);
-  arms.attach(10);
-  arms.write(Home);
+  arm1.attach(10);
+  arm1.write(100-Home);
+  arm2.attach(11);
+  arm2.write(Home);
   pinMode (shockSensor, INPUT);
 
   pinMode (CLK,INPUT);
@@ -64,7 +67,8 @@ if(button==false){
 }
 if(button==true){
   value = digitalRead(CLK);
-  arms.write(Pos);
+  arm1.write(100-Pos);
+  arm2.write(Pos);
   if (value != rotation){ // we use the DT pin to find out which way we turning.
      if (digitalRead(DT) != value) {  // Clockwise
        RotPosition ++;
@@ -80,15 +84,15 @@ if(button==true){
      }
      Serial.print("Encoder RotPosition: ");
      Serial.println(RotPosition);
-     if(Pos<92 && Pos>Home){
+     if(Pos<102 && Pos>Home){
       Pos = RotPosition;
      
      }
-     if(RotPosition>90){
-      RotPosition = 89;
+     if(RotPosition>100){
+      RotPosition = 99;
      }
      if(RotPosition<Home+2){
-      RotPosition = 4;
+      RotPosition = Home+4;
      }
 }
 rotation = value;
@@ -98,11 +102,13 @@ rotation = value;
 }
 
 void armsUp(){
-  arms.write(Pos);
+  arm1.write(100-Pos);
+  arm2.write(Pos);
   Serial.println("arms up");
 }
 void armsDown(){
-  arms.write(Home);
+  arm1.write(100-Home);
+  arm2.write(Home);
   Serial.println("arms down");
 }
 void getOrientation(){
